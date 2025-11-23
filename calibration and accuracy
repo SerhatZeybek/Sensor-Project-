@@ -1,7 +1,6 @@
 %% Sharp Distance Sensor Calibration and Accuracy Analysis
-% Data extracted from the provided files.
 % Target Distance (d) vs. Measured Voltage (V)
-% Source: [153]
+
 
 % Target Distances (Ground Truth - d_true)
 d_true = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80];
@@ -18,10 +17,10 @@ B = -1.29;
 % d_hat = A * V.^B;
 d_hat = A .* V.^(B);
 
-% Calculated Errors (Source: [164])
+% Calculated Errors
 Error = d_hat - d_true;
 
-%% Accuracy Metrics (Source: [166, 167, 168])
+%% Accuracy Metrics
 % These values are derived from your analysis and should be reported directly.
 MAE = 1.32; % Mean Absolute Error (cm)
 RMSE = 1.71; % Root Mean Square Error (cm)
@@ -70,7 +69,7 @@ fprintf('        Calibration Model Accuracy Metrics\n');
 fprintf('======================================================\n');
 fprintf('Calibration Function: d [cm] = %.2f * V^(%.2f)\n', A, B);
 fprintf('------------------------------------------------------\n');
-fprintf('1. Mean Absolute Error (MAE):     %.2f cm [cite: 166]\n', MAE);
-fprintf('2. Root Mean Square Error (RMSE): %.2f cm [cite: 167]\n', RMSE);
-fprintf('3. Mean Absolute Percentage Error (MAPE): %.1f %% [cite: 168]\n', MAPE);
+fprintf('1. Mean Absolute Error (MAE):     %.2f cm \n', MAE);
+fprintf('2. Root Mean Square Error (RMSE): %.2f cm \n', RMSE);
+fprintf('3. Mean Absolute Percentage Error (MAPE): %.1f %% \n', MAPE);
 fprintf('======================================================\n');
