@@ -1,12 +1,12 @@
-%% Sharp Mesafe Sensörü Tam Histerezis Eğrisi Analizi
-% Bu kod, 80cm'den 10cm'ye (Azalan) ve 10cm'den 80cm'ye (Artan) döngülerini çizer.
+%% Sharp IR Distance Sensor Full Hysteresis Curve Analysis
+% This code draws cycles from 80cm to 10cm (decreasing) and from 10cm to 80cm (increasing).
 
-% Hedef Mesafeler (Target Distance - X Ekseni)
+% Target Distances (Target Distance - X-Axis)
 Target_Distances = [80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10];
 
-%% 1. AZALAN YOL VERİSİ (80 CM'den 10 CM'ye - Decreasing Cycle)
-% Veriden hesaplanan ortalama voltajlar
-% Azalan yolda mesafeler azaldıkça voltaj artar.
+%% 1. DECREASING ROAD DATA (From 80 cm to 10 cm - Decreasing Cycle)
+% Average voltages calculated from the data
+% As distances decrease on the descending path, the voltage increases.
 Avg_Voltages_Dec = [
     (0.415 + 0.420 + 0.420 + 0.430 + 0.430) / 5,  % 80 cm
     (0.445 + 0.455 + 0.450 + 0.450 + 0.450) / 5,  % 75 cm
@@ -25,9 +25,9 @@ Avg_Voltages_Dec = [
     (2.092 + 2.136 + 2.116 + 2.126 + 2.136) / 5   % 10 cm
 ];
 
-%% 2. ARTAN YOL VERİSİ (10 CM'den 80 CM'ye - Increasing Cycle)
-% Veriden hesaplanan ortalama voltajlar
-% Artan yolda mesafeler arttıkça voltaj azalır.
+%% 2. INCREASING CYCLE (10 CM to 80 CM)
+% Average voltages calculated from the data
+% As distances increase along the line, the voltage decreases.
 Avg_Voltages_Inc_Raw = [
     (2.121 + 2.102 + 2.131 + 2.126 + 2.121) / 5,  % 10 cm
     (1.530 + 1.535 + 1.544 + 1.540 + 1.549) / 5,  % 15 cm
@@ -46,19 +46,19 @@ Avg_Voltages_Inc_Raw = [
     (0.415 + 0.415 + 0.420 + 0.425 + 0.425) / 5   % 80 cm
 ];
 
-% Artan yolun X ekseni, azalan yol ile aynı sırayı takip etmelidir (80'den 10'a)
-% Bu yüzden Raw veriyi ters çevirip kullanacağız.
+% The ascending path must follow the same sequence as the descending path (from 80 to 10).
+% Therefore, we will reverse the raw data and use it..
 Avg_Voltages_Inc = flip(Avg_Voltages_Inc_Raw); 
 
 
-%% 3. GRAFİK OLUŞTURMA: HISTERESIS LOOP
+%% 3. GRAPHIC CREATION: HISTERESIS LOOP
 figure('Name', 'Sharp Distance Sensor Hysteresis Loop');
 
-% Azalan Yolu Çizme (Mavi)
+% Drawing the Descending Path (Blue)
 plot(Target_Distances, Avg_Voltages_Dec, 'bo-', 'LineWidth', 2, 'MarkerSize', 8, 'MarkerFaceColor', 'b', 'DisplayName', 'Decreasing Cycle (80cm to 10cm)');
 hold on;
 
-% Artan Yolu Çizme (Kırmızı)
+% Drawing the Rising Path (Red)
 plot(Target_Distances, Avg_Voltages_Inc, 'rs--', 'LineWidth', 2, 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'DisplayName', 'Increasing Cycle (10cm to 80cm)');
 
 title('Sensor Output Voltage vs. Target Distance (Hysteresis Loop)');
@@ -70,9 +70,9 @@ set(gca, 'XDir', 'reverse'); % X eksenini 80'den 10'a gösterecek şekilde ters 
 
 hold off;
 
-%% 4. HISTERESIS DEĞERİNİN HESAPLANMASI
-% Histeresis, genellikle maksimum histeresis döngüsünün, tam ölçek çıktısına oranlanmasıyla hesaplanır.
-% Örnek: 40 cm'deki voltaj farkı
+%% 4. CALCULATION OF THE HISTERESIS VALUE
+% Hysteresis is usually calculated by dividing the maximum hysteresis cycle by the full-scale output.
+% Example: Voltage difference at 40 cm
 Index_40cm = find(Target_Distances == 40);
 Hys_Voltage_Diff_40cm = abs(Avg_Voltages_Dec(Index_40cm) - Avg_Voltages_Inc(Index_40cm));
 fprintf('\n--- Hysteresis Calculation Example ---\n');
