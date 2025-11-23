@@ -1,0 +1,105 @@
+%% Proje 1 - Sharp Mesafe Sensörü Tekrarlanabilirlik Analizi
+% Veri setinden çıkarılan mesafeler (cm)
+% -----------------------------------------------------------
+
+% 20 CM Verileri (50 Ölçüm)
+Dist_20cm = [19.9, 19.9, 19.8, 19.7, 20.2, 19.7, 19.7, 19.9, 19.7, 19.9, 19.8, 20.0, 19.6, 19.8, 20.0, 19.7, 19.7, 20.0, 19.5, 19.8, 19.6, 20.0, 20.1, 19.6, 19.9, 19.9, 20.0, 19.7, 19.8, 19.9, 19.8, 19.7, 20.0, 19.8, 19.5, 19.9, 19.8, 19.9, 19.6, 19.7, 20.0, 19.5, 19.7, 20.0, 19.6, 19.8, 19.9, 19.7, 19.8];
+
+% 40 CM Verileri (50 Ölçüm)
+Dist_40cm = [40.5, 40.9, 40.5, 39.7, 39.5, 40.4, 40.5, 40.8, 39.8, 41.1, 40.6, 39.7, 41.0, 40.1, 40.3, 40.4, 41.5, 40.5, 39.3, 41.3, 39.9, 41.0, 39.7, 39.9, 40.0, 40.8, 40.4, 40.9, 40.7, 40.0, 40.3, 40.5, 39.7, 40.8, 39.6, 40.4, 39.9, 40.7, 41.0, 39.9, 40.8, 40.6, 39.6, 40.2, 40.8, 41.0, 41.6, 40.0, 39.9, 41.5];
+
+% 60 CM Verileri (50 Ölçüm)
+Dist_60cm = [60.2, 58.5, 58.0, 58.8, 58.9, 56.8, 58.4, 57.1, 57.0, 58.0, 58.4, 60.0, 57.3, 57.8, 56.1, 56.2, 58.0, 56.3, 60.0, 58.5, 57.9, 56.9, 55.9, 57.4, 56.4, 59.2, 57.2, 57.3, 56.4, 56.7, 56.9, 58.4, 57.6, 56.8, 58.6, 55.6, 60.4, 57.9, 58.1, 56.3, 55.9, 60.3, 56.9, 56.8, 59.0, 58.7, 58.5, 58.0, 60.2, 57.7];
+
+% Deneme Sayısı
+N = length(Dist_20cm);
+Indices = 1:N;
+
+% Hedef Mesafeler
+Target_20cm = 20;
+Target_40cm = 40;
+Target_60cm = 60;
+
+%% İstatistiksel Hesaplamalar
+% -----------------------------------------------------------
+
+% Ortalama
+Mean_20cm = mean(Dist_20cm);
+Mean_40cm = mean(Dist_40cm);
+Mean_60cm = mean(Dist_60cm);
+
+% Standart Sapma (Repeatability'nin temel ölçütü)
+Std_20cm = std(Dist_20cm);
+Std_40cm = std(Dist_40cm);
+Std_60cm = std(Dist_60cm);
+
+% Konsola Özet Yazdırma
+fprintf('--- Repeatability Statistics ---\n');
+fprintf('Target: 20 cm | Mean: %.2f cm | Std Dev (Repeatability): %.3f cm\n', Mean_20cm, Std_20cm);
+fprintf('Target: 40 cm | Mean: %.2f cm | Std Dev (Repeatability): %.3f cm\n', Mean_40cm, Std_40cm);
+fprintf('Target: 60 cm | Mean: %.2f cm | Std Dev (Repeatability): %.3f cm\n', Mean_60cm, Std_60cm);
+fprintf('--------------------------------\n');
+
+%% Grafik 1: Tekrarlanabilirlik Dağılım Grafikleri (Scatter Plots)
+% -----------------------------------------------------------
+
+figure('Name', 'Distance Sensor Repeatability Analysis');
+tiledlayout(3, 1, 'Padding', 'compact'); % 3 alt grafik oluştur
+
+% 1. 20 CM Mesafesi
+nexttile
+scatter(Indices, Dist_20cm, 30, 'b', 'filled');
+hold on;
+yline(Target_20cm, '--r', 'Target (20 cm)', 'LineWidth', 1.5, 'LabelHorizontalAlignment', 'left');
+yline(Mean_20cm, '-k', sprintf('Mean (%.2f cm)', Mean_20cm), 'LineWidth', 1.5, 'LabelHorizontalAlignment', 'right');
+title('Repeatability Test at 20 cm');
+xlabel('Measurement Index');
+ylabel('Measured Distance (cm)');
+ylim([19.0 20.5]); % Eksen sınırlarını manuel ayarlayarak tutarlılığı göster
+grid on;
+hold off;
+
+% 2. 40 CM Mesafesi
+nexttile
+scatter(Indices, Dist_40cm, 30, 'g', 'filled');
+hold on;
+yline(Target_40cm, '--r', 'Target (40 cm)', 'LineWidth', 1.5, 'LabelHorizontalAlignment', 'left');
+yline(Mean_40cm, '-k', sprintf('Mean (%.2f cm)', Mean_40cm), 'LineWidth', 1.5, 'LabelHorizontalAlignment', 'right');
+title('Repeatability Test at 40 cm');
+xlabel('Measurement Index');
+ylabel('Measured Distance (cm)');
+ylim([39.0 42.0]); % Eksen sınırlarını manuel ayarlama
+grid on;
+hold off;
+
+% 3. 60 CM Mesafesi
+nexttile
+scatter(Indices, Dist_60cm, 30, 'm', 'filled');
+hold on;
+yline(Target_60cm, '--r', 'Target (60 cm)', 'LineWidth', 1.5, 'LabelHorizontalAlignment', 'left');
+yline(Mean_60cm, '-k', sprintf('Mean (%.2f cm)', Mean_60cm), 'LineWidth', 1.5, 'LabelHorizontalAlignment', 'right');
+title('Repeatability Test at 60 cm');
+xlabel('Measurement Index');
+ylabel('Measured Distance (cm)');
+ylim([55.0 61.0]); % Eksen sınırlarını manuel ayarlama
+grid on;
+hold off;
+
+%% Grafik 2: Standart Sapma Karşılaştırması (Bar Chart)
+% -----------------------------------------------------------
+
+figure('Name', 'Standard Deviation Comparison');
+
+StDevs = [Std_20cm, Std_40cm, Std_60cm];
+TargetLabels = {'20 cm', '40 cm', '60 cm'};
+
+bar(StDevs, 'FaceColor', [0.3 0.5 0.7]);
+title('Standard Deviation vs. Target Distance (Repeatability)');
+xlabel('Target Distance');
+ylabel('Standard Deviation (\sigma_D) (cm)');
+xticklabels(TargetLabels);
+grid on;
+
+% Her çubuğun üstüne Std Dev değerini yazdır
+text(1:length(StDevs), StDevs, cellstr(num2str(StDevs', '%.3f')),...
+    'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'center');
