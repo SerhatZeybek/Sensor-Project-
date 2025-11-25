@@ -1,60 +1,73 @@
 %% Sharp Distance Sensor Calibration and Accuracy Analysis
 % Target Distance (d) vs. Measured Voltage (V)
 
+clc; clear; close all;
 
-% Target Distances (Ground Truth - d_true)
+%% 0. Experimental Data
+
+% Target Distances (Ground Truth - d_true) in cm
 d_true = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80];
 
-% Measured Voltages (V)
-V = [3.13, 2.28, 1.63, 1.32, 1.08, 0.93, 0.81, 0.75, 0.67, 0.61, 0.57, 0.54, 0.48, 0.46, 0.43, 0.42];
+% Measured Voltages (V) in Volts
+V = [3.13, 2.28, 1.63, 1.32, 1.08, 0.93, 0.81, 0.75, ...
+     0.67, 0.61, 0.57, 0.54, 0.48, 0.46, 0.43, 0.42];
 
-% Model Parameters (d = A * V^B)
-% Source: [158, 159, 161]
-A = 26.56;
-B = -1.29;
+%% 1. Least-Squares Power-Law Fit (d = A * V^B)
+% We fit in the log–log domain:
+% log(d) = B * log(V) + log(A)
 
-% Calculate Estimated Distance using the Model (d_hat)
-% d_hat = A * V.^B;
-d_hat = A .* V.^(B);
+logV = log(V);
+logd = log(d_true);
 
-% Calculated Errors
+% Linear fit in log–log space
+p = polyfit(logV, logd, 1);   % p(1) = B, p(2) = log(A)
+
+B = p(1);
+A = exp(p(2));
+
+% Estimated distance using the calibrated model
+d_hat = A .* V.^B;
+
+% Error (model - ground truth)
 Error = d_hat - d_true;
 
-%% Accuracy Metrics
-% These values are derived from your analysis and should be reported directly.
-MAE = 1.32; % Mean Absolute Error (cm)
-RMSE = 1.71; % Root Mean Square Error (cm)
-MAPE = 4.6;  % Mean Absolute Percentage Error (%)
+%% 2. Accuracy Metrics
 
-%% 1. Plotting the Calibration Curve and Model Fit
+MAE  = mean(abs(Error));                % Mean Absolute Error (cm)
+RMSE = sqrt(mean(Error.^2));            % Root Mean Square Error (cm)
+MAPE = mean(abs(Error ./ d_true)) * 100; % Mean Absolute Percentage Error (%)
+
+%% 3. Plotting the Calibration Curve and Model Fit
 
 figure('Name', 'Sensor Calibration Curve and Model Fit');
 
 % Plot Measured Voltage vs. True Distance (Raw Data)
-plot(d_true, V, 'ko', 'MarkerSize', 8, 'LineWidth', 1.5, 'DisplayName', 'Raw Measurement Data (V vs d)');
+plot(d_true, V, 'ko', 'MarkerSize', 8, 'LineWidth', 1.5, ...
+    'DisplayName', 'Raw Measurement Data (V vs d)');
 hold on;
 
 % Plot the Fitted Model (Curve)
-% Create a smooth range for V to plot the fitted line smoothly
-V_fit = linspace(min(V), max(V), 100);
-d_fit = A .* V_fit.^(B);
-plot(d_fit, V_fit, 'b-', 'LineWidth', 2, 'DisplayName', 'Fitted Model: d = 26.56 \cdot V^{-1.29}');
+V_fit = linspace(min(V), max(V), 200);
+d_fit = A .* V_fit.^B;
 
-title('Sharp Sensor Calibration Curve and Power Law Fit');
+modelLabel = sprintf('Fitted Model: d = %.2f \\cdot V^{%.2f}', A, B);
+plot(d_fit, V_fit, 'b-', 'LineWidth', 2, 'DisplayName', modelLabel);
+
+title('Sharp Sensor Calibration Curve and Power-Law Fit');
 xlabel('Distance (d) [cm]');
 ylabel('Output Voltage (V)');
 legend('show', 'Location', 'NorthEast');
 grid on;
 hold off;
 
-%% 2. Plotting the Accuracy (Error)
+%% 4. Plotting the Accuracy (Error)
 
 figure('Name', 'Prediction Error (Accuracy)');
 
-% Plot Error vs. True Distance
 bar(d_true, Error, 0.8, 'FaceColor', [0.8 0.1 0.1]);
 hold on;
-yline(0, '-k', 'Zero Error Line', 'LineWidth', 1.5, 'LabelHorizontalAlignment', 'left');
+yline(0, '-k', 'Zero Error Line', 'LineWidth', 1.5, ...
+    'LabelHorizontalAlignment', 'left');
 
 title('Calibration Model Prediction Error (d\_hat - d)');
 xlabel('Target Distance (cm)');
@@ -62,14 +75,16 @@ ylabel('Error (cm)');
 grid on;
 hold off;
 
-%% 3. Display Accuracy Metrics
+%% 5. Display Calibration and Accuracy Metrics
 
 fprintf('\n\n======================================================\n');
 fprintf('        Calibration Model Accuracy Metrics\n');
 fprintf('======================================================\n');
+fprintf('Data range used for fitting: %.0f cm to %.0f cm (%d points)\n', ...
+        min(d_true), max(d_true), numel(d_true));
 fprintf('Calibration Function: d [cm] = %.2f * V^(%.2f)\n', A, B);
 fprintf('------------------------------------------------------\n');
-fprintf('1. Mean Absolute Error (MAE):     %.2f cm \n', MAE);
-fprintf('2. Root Mean Square Error (RMSE): %.2f cm \n', RMSE);
-fprintf('3. Mean Absolute Percentage Error (MAPE): %.1f %% \n', MAPE);
-fprintf('======================================================\n');
+fprintf('1. Mean Absolute Error (MAE):       %.2f cm \n', MAE);
+fprintf('2. Root Mean Square Error (RMSE):   %.2f cm \n', RMSE);
+fprintf('3. Mean Absolute Percentage Error:  %.2f %% \n', MAPE);
+fprintf('======================================================\n\n');
